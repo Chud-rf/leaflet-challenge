@@ -40,7 +40,10 @@ d3.json(url).then(function(response) {
                 opacity: 1,
                 borderColor: 'black'
             })
-            .bindPopup(`<h2>${features[i].properties.place}</h2> <hr> <h3>Magnitude: ${features[i].properties.mag}</h3>`)
+            .bindPopup(`<h2>${features[i].properties.place}</h2> <hr> 
+            <h3>Magnitude: ${features[i].properties.mag}</h3>
+            <h3>Depth: ${depth}</h3>
+            `)
             .addTo(myMap);
         };
     };
