@@ -29,15 +29,19 @@ d3.json(url).then(function(response) {
             let markerColor = setColorByDepth(depth);
 
             // Magnitude variable
-            let markerSize = features[i].properties.mag;
-            console.log(markerSize);
+            let mag = features[i].properties.mag;
+            let markerSize = setSizeByMagnitude(mag);
+            // console.log(markerSize);
             
             // Create marker
             L.circleMarker(markerCoordinates, {
                 radius: markerSize * 3,
                 color: markerColor,
-                opacity: 0.75
-            }).addTo(myMap);
+                opacity: 1,
+                borderColor: 'black'
+            })
+            .bindPopup(`<h2>${features[i].properties.place}</h2> <hr> <h3>Magnitude: ${features[i].properties.mag}</h3>`)
+            .addTo(myMap);
         };
     };
 });
@@ -69,24 +73,34 @@ function setColorByDepth(value) {
 
 // Earthquake color by depth
 function setSizeByMagnitude(value) {
-    if (value > 90) {
-      radius = '#FF0000'
+    if (value < 0) {
+        radius = 1
     }
-    else if (value > 70) {
-      radius = '#FF3300'
-    }
-    else if (value > 50) {
-      radius = '#FFAA00'
-    }
-    else if (value > 30) {
-    radius = '#FFEE00'
-    }
-    else if (value > 10) {
-    color = '#CCFF00'
+    else if (value === 0) {
+        radius = 2
     }
     else {
-      color = '#66FF00'
+        radius = value * 2
     };
   
-    return color;
+    return radius;
 };
+
+// Legend
+// Legend help from: https://codepen.io/haakseth/pen/KQbjdO
+let info = L.control({
+    position: "bottomright"
+});
+
+info.onAdd = function() {
+    let div = L.DomUtil.create("div", "legend");
+    div.innerHTML += '<i style="background: #66FF00"></i><span>-10-10</span><br>';
+    div.innerHTML += '<i style="background: #CCFF00"></i><span>10-30</span><br>';
+    div.innerHTML += '<i style="background: #FFEE00"></i><span>30-50</span><br>';
+    div.innerHTML += '<i style="background: #FFAA00"></i><span>50-70</span><br>';
+    div.innerHTML += '<i style="background: #FF3300"></i><span>70-90</span><br>';
+    div.innerHTML += '<i style="background: #FF0000"></i><span>90+</span><br>';
+    return div;
+};
+
+info.addTo(myMap);
